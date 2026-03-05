@@ -21,4 +21,10 @@ pipeline {
             }
         }
     }
+    post {
+failure {
+
+echo  'Build failed due to errors or vulnerabilities'
+   }
+ }
 }
