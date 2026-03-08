@@ -9,22 +9,48 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Setup Python Environment') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                python3 -m venv venv
+                source venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                pip install pytest
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'pytest'
+                sh '''
+                source venv/bin/activate
+                pytest
+                '''
             }
         }
-    }
-    post {
-failure {
 
-echo  'Build failed due to errors or vulnerabilities'
-   }
- }
+        stage('SCA Scan') {
+            steps {
+                sh '''
+                dependency-check.sh \
+                --project "TP-Jenkins-Security" \
+                --scan . \
+                --format HTML \
+                --failOnCVSS 7
+                '''
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Pipeline executed successfully'
+        }
+
+        failure {
+            echo 'Build failed due to errors or vulnerabilities'
+        }
+    }
 }
