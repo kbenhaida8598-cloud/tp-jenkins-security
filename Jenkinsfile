@@ -20,7 +20,11 @@ pipeline {
                 '''
             }
         }
-
+        stage('SAST Scan') {
+    steps {
+        sh 'sonar-scanner'
+    }
+   }
         stage('Run Tests') {
             steps {
                 sh '''
