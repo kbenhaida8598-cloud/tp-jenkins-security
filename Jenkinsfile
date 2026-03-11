@@ -3,9 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/kbenhaida8598-cloud/tp-jenkins-security.git'
+                checkout scm
             }
         }
 
@@ -13,22 +13,24 @@ pipeline {
             steps {
                 sh '''
                 python3 -m venv venv
-                source venv/bin/activate
+                . venv/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
                 pip install pytest
                 '''
             }
         }
+
         stage('SAST Scan') {
-    steps {
-        sh 'sonar-scanner'
-    }
-   }
+            steps {
+                sh 'sonar-scanner'
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 sh '''
-                source venv/bin/activate
+                . venv/bin/activate
                 pytest
                 '''
             }
