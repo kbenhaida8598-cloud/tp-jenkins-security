@@ -21,12 +21,11 @@ pipeline {
             }
         }
 
-        stage('SAST Scan') {
-            steps {
-                sh 'sonar-scanner'
-            }
+      stage('SAST Scan') {
+        steps {
+            sh '/opt/sonar-scanner/bin/sonar-scanner'
         }
-
+     }
         stage('Run Tests') {
             steps {
                 sh '''
