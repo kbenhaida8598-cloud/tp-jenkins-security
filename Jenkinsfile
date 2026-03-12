@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Token SonarQube stocké dans Jenkins Credentials
+        SONAR_TOKEN = credentials('sonar-token-id')  
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -12,33 +17,35 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 sh '''
+                # Création du virtualenv
                 python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install pytest
+                # Installation des packages
+                ./venv/bin/pip install --upgrade pip
+                ./venv/bin/pip install -r requirements.txt
+                ./venv/bin/pip install pytest
                 '''
             }
         }
 
-      stage('SAST Scan') {
-        steps {
-            sh '/opt/sonar-scanner/bin/sonar-scanner'
+        stage('SAST Scan - SonarQube') {
+            steps {
+                // Utilisation du plugin SonarQube
+                withSonarQubeEnv('SonarQube Server') {
+                    sh "./sonar-scanner/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=$SONAR_HOST_URL"
+                }
+            }
         }
-     }
+
         stage('Run Tests') {
             steps {
-                sh '''
-                . venv/bin/activate
-                pytest
-                '''
+                sh './venv/bin/pytest --maxfail=1 --disable-warnings -q'
             }
         }
 
-        stage('SCA Scan') {
+        stage('SCA Scan - Dependency Check') {
             steps {
                 sh '''
-                dependency-check.sh \
+                ./dependency-check/bin/dependency-check.sh \
                 --project "TP-Jenkins-Security" \
                 --scan . \
                 --format HTML \
@@ -51,11 +58,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline executed successfully'
+            echo 'Pipeline executed successfully ✅'
         }
-
         failure {
-            echo 'Build failed due to errors or vulnerabilities'
+            echo 'Build failed due to errors or vulnerabilities ❌'
         }
     }
 }
