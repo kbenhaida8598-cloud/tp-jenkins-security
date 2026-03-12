@@ -31,7 +31,7 @@ pipeline {
             steps {
                 // Utilisation du plugin SonarQube
                 withSonarQubeEnv('SonarQube Server') {
-                    sh "./sonar-scanner/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=$SONAR_HOST_URL"
+                  sh 'sonar-scanner'
                 }
             }
         }
