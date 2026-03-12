@@ -27,14 +27,13 @@ pipeline {
             }
         }
 
-        stage('SAST Scan - SonarQube') {
-            steps {
-                // Utilisation du plugin SonarQube
-                withSonarQubeEnv('SonarQube Server') {
-                  sh 'sonar-scanner'
-                }
-            }
+      stage('SAST Scan') {
+    steps {
+        withSonarQubeEnv('SonarQube Server') {
+            sh 'sonar-scanner'
         }
+    }
+}
 
         stage('Run Tests') {
             steps {
