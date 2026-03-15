@@ -21,7 +21,7 @@ pipeline {
                 -Dsonar.projectKey=TP-Jenkins-Security \
                 -Dsonar.projectName="TP-Jenkins-Security" \
                 -Dsonar.sources=. \
-                -Dsonar.python.version=3
+               
                 '''
             }
         }
