@@ -45,7 +45,7 @@ pipeline {
             steps {
                 sh '''
                 ./dependency-check/bin/dependency-check.sh \
-                --project "TP-Jenkins-Security" \
+                --project "tp-jenkins-security" \
                 --scan . \
                 --format HTML \
                 --failOnCVSS 7
