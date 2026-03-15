@@ -16,13 +16,7 @@ pipeline {
 
         stage('Setup Python Environment') {
             steps {
-                sh '''
-                 sonar-scanner \
-                -Dsonar.projectKey=TP-Jenkins-Security \
-                -Dsonar.projectName="TP-Jenkins-Security" \
-                -Dsonar.sources=. \
-               
-                '''
+                sh 'sonar-scanner'
             }
         }
 
