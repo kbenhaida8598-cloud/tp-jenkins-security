@@ -22,8 +22,18 @@ pipeline {
 
       stage('SAST Scan') {
     steps {
-        withSonarQubeEnv('SonarQube Server') {
-            sh 'sonar-scanner'
+        withSonarQubeEnv('SonarQube') {
+            script {
+                // Utiliser l'outil installé automatiquement
+                def scannerHome = tool 'SonarScanner'
+                sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=TP-Jenkins-Security \
+                    -Dsonar.projectName="TP-Jenkins-Security" \
+                    -Dsonar.sources=. \
+                    -Dsonar.python.version=3
+                """
+            }
         }
     }
 }
