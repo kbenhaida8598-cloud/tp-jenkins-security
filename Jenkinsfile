@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // Token SonarQube stocké dans Jenkins Credentials
-        SONAR_TOKEN = credentials('jenkis-token')  
+      
+        SONAR_TOKEN = credentials('jenkins-token')  
     }
 
     stages {
@@ -16,24 +16,21 @@ pipeline {
 
         stage('Setup Python Environment') {
             steps {
-                sh 'sonar-scanner'
+                sh '''
+                # Création du virtualenv
+                python3 -m venv venv
+                # Installation des packages
+                ./venv/bin/pip install --upgrade pip
+                ./venv/bin/pip install -r requirements.txt
+                ./venv/bin/pip install pytest
+                '''
             }
         }
 
       stage('SAST Scan') {
     steps {
-        withSonarQubeEnv('SonarQube') {
-            script {
-                // Utiliser l'outil installé automatiquement
-                def scannerHome = tool 'SonarScanner'
-                sh """
-                    ${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectKey=TP-Jenkins-Security \
-                    -Dsonar.projectName="TP-Jenkins-Security" \
-                    -Dsonar.sources=. \
-                    -Dsonar.python.version=3
-                """
-            }
+        withSonarQubeEnv('SonarQube Server') {
+            sh 'sonar-scanner'
         }
     }
 }
@@ -48,7 +45,7 @@ pipeline {
             steps {
                 sh '''
                 ./dependency-check/bin/dependency-check.sh \
-                --project "tp-jenkins-security" \
+                --project "TP-Jenkins-Security" \
                 --scan . \
                 --format HTML \
                 --failOnCVSS 7
