@@ -17,12 +17,11 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 sh '''
-                # Création du virtualenv
-                python3 -m venv venv
-                # Installation des packages
-                ./venv/bin/pip install --upgrade pip
-                ./venv/bin/pip install -r requirements.txt
-                ./venv/bin/pip install pytest
+                 sonar-scanner \
+                -Dsonar.projectKey=TP-Jenkins-Security \
+                -Dsonar.projectName="TP-Jenkins-Security" \
+                -Dsonar.sources=. \
+                -Dsonar.python.version=3
                 '''
             }
         }
